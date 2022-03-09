@@ -1,7 +1,9 @@
+import Landing from "./pages/Landing";
+import 'normalize.css';
 
 function App() {
   return (
-    <h1>test</h1>
+   <Landing />
   );
 }
 
