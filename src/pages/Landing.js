@@ -1,16 +1,36 @@
-import logo from '../assets/images/main-logo.png';
+import logo from "../assets/images/logo.svg";
+import main from "../assets/images/main-alternative.svg";
+import { Wrapper } from "../assets/wrappers/LandingPage";
+import Logo from "../components/Logo";
+import { Link } from "react-router-dom";
 
 const Landing = () => {
-    return (
-        <main>
-            <nav>
-                <img src={logo} alt='jobify' className='logo' />
-            </nav>
-            <div className='container page'>
-                <h1>job <span>tracking</span> app</h1>
-            </div>
-        </main>
-    )
-}
+  return (
+    <Wrapper>
+      <nav>
+        <Logo />
+      </nav>
+      <div className="container page">
+        <div className="info">
+          <h1>
+            job <span>tracking</span> app
+          </h1>
+          <p>
+            I'm baby wayfarers hoodie next level taiyaki brooklyn cliche blue
+            bottle single-origin coffee chia. Aesthetic post-ironic venmo,
+            quinoa lo-fi tote bag adaptogen everyday carry meggings +1 brunch
+            narwhal.
+          </p>
+          <Link to="/register" className="btn btn-hero">
+            Login/Register
+          </Link>
+          {/* <button className="btn btn-hero"></button>     */}
+        </div>
 
-export default Landing
+        <img src={main} alt="job hunt" className="main-img" />
+      </div>
+    </Wrapper>
+  );
+};
+
+export default Landing;
