@@ -1,13 +1,45 @@
-const register = async (req,res) => {
-    res.send('register user')
+import User from "../models/User.js";
+import { StatusCodes } from 'http-status-codes';
+
+
+class CustomApiError extends Error{
+  constructor(message) {
+    super(message)
+   
+  }
 }
 
-const login = async (req,res) => {
-    res.send('login user')
+class BadRequestError extends CustomApiError {
+  constructor(message) {
+    super(message)
+    this.statusCode = StatusCodes.BAD_REQUEST
+  }
 }
 
-const updateUser = async (req,res) => {
-    res.send('update  user')
+class NotFoundError extends CustomApiError {
+  constructor(message) {
+    super(message)
+    this.statusCode = StatusCodes.NOT_FOUND
+  }
 }
 
-export {register, login, updateUser}
+const register = async (req, res) => {
+  const {name, email, password} = req.body;
+
+  if(!name || email || password) {
+    throw new BadRequestError('please provide all values')
+  }
+
+  const user = await User.create(name, email, password)
+  res.status(StatusCodes.CREATED).json({ user })
+}
+
+const login = async (req, res) => {
+  res.send("login user");
+};
+
+const updateUser = async (req, res) => {
+  res.send("update  user");
+};
+
+export { register, login, updateUser };
