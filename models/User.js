@@ -27,6 +27,7 @@ const UserSchema = new mongoose.Schema({
         minLength: 6,
         maxLength: 20,
         trim: true,
+        select: false,
     },
     lastName: {
         type: String,
@@ -50,6 +51,11 @@ UserSchema.pre('save', async function () {
 
 UserSchema.methods.createJWT = function () {
     return jwt.sign({ userId: this._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_LIFETIME })
+}
+
+UserSchema.methods.comparePassword = async function (candidatePassword) {
+    const isMatch = await bcrypt.compare(candidatePassword, this.password)
+    return isMatch
 }
 
 export default mongoose.model('User', UserSchema);
