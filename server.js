@@ -1,3 +1,4 @@
+import cors from 'cors';
 import express from 'express'
 const app = express()
 import dotenv from 'dotenv'
@@ -9,10 +10,11 @@ import connectDB from './db/connect.js';
 import authRouter from './routes/authRoutes.js';
 import jobsRouter from './routes/jobsRoutes.js';
 
+app.use(cors());
 app.use(express.json());
 
 app.get('/', (req, res) => {
-    res.send('Welcome')
+    res.json({msg: 'Welcome!'})
 })
 
 app.use('/api/v1/auth', authRouter)
