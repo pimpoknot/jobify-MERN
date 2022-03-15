@@ -27,3 +27,26 @@ npm start
 ```
 
 - visit url http://localhost:3000/
+
+
+## HTTP endpoints to Users
+
+#### Library used:
+
+- [Axios](https://axios-http.com/docs/intro)
+---
+
+```POST - Create User```
+```
+localhost:5000/api/v1/auth/register
+```
+```POST - Authenticate User```
+```
+localhost:5000/api/v1/auth/login
+```
+``` PATCH - Update User datas```
+```
+localhost:5000/api/v1/auth/updateUser
+```
+
+---
