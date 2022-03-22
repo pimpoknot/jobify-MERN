@@ -57,7 +57,7 @@ const updateUser = async (req, res) => {
     throw new BadRequestError("Please provide all values")
   }
 
-  const user = await User.findOne({_id: req.user.userId})
+  const user = await User.findOne({ _id: req.user.userId })
 
   user.email = email
   user.name = name
@@ -72,8 +72,6 @@ const updateUser = async (req, res) => {
     token,
     location: user.location
   })
-  
-  res.send("update  user");
 };
 
 const deleteUser = async(req, res) => {

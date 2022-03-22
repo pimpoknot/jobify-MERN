@@ -17,7 +17,7 @@ const Profile  = () => {
             displayAlert()
             return
         }
-        updateUser({user, email,  lastName, location})
+        updateUser({name, email, lastName, location})
     }
     return (
         <Wrapper>
