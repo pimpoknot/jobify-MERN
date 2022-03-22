@@ -1,4 +1,4 @@
-import React, { useReducer, useContext } from "react";
+import React, { useReducer, useContext, useEffect } from "react";
 import reducer from "../context/reduce";
 import {
   CLEAR_ALERT,
@@ -12,6 +12,13 @@ import {
   SETUP_USER_SUCCESS,
   TOGGLE_SIDEBAR,
   HANDLE_CHANGE,
+  CLEAR_VALUES,
+  CREATE_JOB_BEGIN,
+  CREATE_JOB_SUCCESS,
+  CREATE_JOB_ERROR,
+  GET_JOBS_SUCCESS,
+  GET_JOBS_BEGIN,
+  SET_EDIT_JOB,
 } from "./actions";
 import axios from "axios";
 
@@ -30,13 +37,17 @@ const initialState = {
   showSiderbar: false,
   isEditing: false,
   jobLocation: userLocation || "",
-  editJobId:'',
-  position: '',
-  company: '',
-  jobTypeOptions: ['full-time', 'part-time', 'remote', 'internship'],
-  jobType: 'full-time',
-  statusOptions: ['pending', 'interview', 'declined'],
-  status: 'pending'
+  editJobId: "",
+  position: "",
+  company: "",
+  jobTypeOptions: ["full-time", "part-time", "remote", "internship"],
+  jobType: "full-time",
+  statusOptions: ["pending", "interview", "declined"],
+  status: "pending",
+  jobs: [],
+  totalJobs: 0,
+  numOfPages: 1,
+  page: 1,
 };
 
 const AppContext = React.createContext();
@@ -55,8 +66,8 @@ const AppProvider = ({ children }) => {
 
   authFetch.interceptors.request.use(
     (config) => {
-      config.headers.common["Authorization"] = `Bearer ${state.token}`
-      return config
+      config.headers.common["Authorization"] = `Bearer ${state.token}`;
+      return config;
     },
     (err) => {
       return Promise.reject(err);
@@ -146,8 +157,8 @@ const AppProvider = ({ children }) => {
     dispatch({ type: UPDATE_USER_BEGIN });
     try {
       const { data } = await authFetch.patch("/auth/updateUser", currentUser);
-      
-      const { user, location, token } = data
+
+      const { user, location, token } = data;
 
       dispatch({
         type: UPDATE_USER_SUCCESS,
@@ -157,7 +168,7 @@ const AppProvider = ({ children }) => {
       });
       addUserToLocalStorage({ user, location, token });
     } catch (err) {
-      if(err.response.status !== 401) {
+      if (err.response.status !== 401) {
         dispatch({
           type: UPDATE_USER_ERROR,
           payload: {
@@ -165,18 +176,85 @@ const AppProvider = ({ children }) => {
           },
         });
       }
-      
+    }
+    clearAlert();
+  };
+
+  const handleChange = ({ name, value }) => {
+    dispatch({
+      type: HANDLE_CHANGE,
+      payload: { name, value },
+    });
+  };
+
+  const clearValues = () => {
+    dispatch({
+      type: CLEAR_VALUES,
+    });
+  };
+
+  const createJob = async () => {
+    dispatch({ type: CREATE_JOB_BEGIN });
+    try {
+      const { position, company, jobLocation, jobType, status } = state;
+
+      await authFetch.post("/jobs", {
+        company,
+        position,
+        jobLocation,
+        jobType,
+        status,
+      });
+      dispatch({ type: CREATE_JOB_SUCCESS });
+      dispatch({ type: CLEAR_VALUES });
+    } catch (err) {
+      if (err.response.status === 401) {
+        dispatch({
+          type: CREATE_JOB_ERROR,
+          payload: err.response.data.msg,
+        });
+      }
+      clearAlert();
+    }
+  };
+
+  const getJobs = async () => {
+    let url = `/jobs`;
+    dispatch({ type: GET_JOBS_BEGIN });
+
+    try {
+      const { data } = await authFetch(url);
+      const { jobs, totalJobs, numOfPages } = data;
+
+      dispatch({
+        type: GET_JOBS_SUCCESS,
+        payload: {
+          jobs,
+          totalJobs,
+          numOfPages,
+        },
+      });
+    } catch (err) {
+      console.log(err.response);
+      logoutUser();
     }
 
     clearAlert();
   };
 
-  const handleChange = ({name, value}) => {
+  useEffect(() => {
+    getJobs();
+  }, []);
+
+  const setEditJob = (id) => {
     dispatch({
-      type: HANDLE_CHANGE,
-      payload: {name, value}
-    })
-  }
+      type: SET_EDIT_JOB,
+      payload: { id },
+    });
+  };
+  const deleteJob = (id) => {
+    console.log(`delete : ${id}`);
+  };
 
   return (
     <AppContext.Provider
@@ -187,6 +265,12 @@ const AppProvider = ({ children }) => {
         toggleSidebar,
         logoutUser,
         updateUser,
+        handleChange,
+        clearValues,
+        createJob,
+        getJobs,
+        setEditJob,
+        deleteJob,
       }}
     >
       {children}
