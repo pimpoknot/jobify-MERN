@@ -21,5 +21,6 @@ export {
   ChartsContainer,
   JobsContainer,
   SearchContainer,
-  StatsContainer
+  StatsContainer,
+  Loading
 }
